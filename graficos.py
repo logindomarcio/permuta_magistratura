@@ -13,6 +13,16 @@ def criar_grafico_tribunais_procurados(tribunais_stats):
     # Pegar top 10
     top_10 = dados_procurados[:10]
     
+    if not top_10:
+        # Se não houver dados, criar gráfico vazio
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Nenhum dado disponível",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False
+        )
+        return fig
+    
     tribunais = [x[0] for x in top_10]
     valores = [x[1] for x in top_10]
     
@@ -35,18 +45,18 @@ def criar_grafico_tribunais_procurados(tribunais_stats):
             'text': '🎯 Top 10 Tribunais Mais Procurados',
             'x': 0.5,
             'xanchor': 'center',
-            'font': {'size': 20, 'family': 'serif', 'color': '#2c3e50'}
+            'font': {'size': 20, 'family': 'Inter', 'color': '#2c3e50'}
         },
         xaxis_title='Tribunais',
         yaxis_title='Número de Preferências',
-        plot_bgcolor='rgba(253, 246, 227, 0.8)',  # Fundo bege claro
-        paper_bgcolor='rgba(253, 246, 227, 0.5)',
-        font=dict(family="serif", size=12, color="#2c3e50"),
+        plot_bgcolor='rgba(255, 255, 255, 0.8)',
+        paper_bgcolor='rgba(255, 255, 255, 0.5)',
+        font=dict(family="Inter", size=12, color="#2c3e50"),
         height=400,
         margin=dict(l=50, r=50, t=80, b=50)
     )
     
-    fig.update_xaxis(tickangle=45)
+    fig.update_xaxis(tickangle=-45)
     
     return fig
 
@@ -60,6 +70,15 @@ def criar_grafico_tribunais_exportadores(tribunais_stats):
     
     # Pegar top 10
     top_10 = dados_exportadores[:10]
+    
+    if not top_10:
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Nenhum dado disponível",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False
+        )
+        return fig
     
     tribunais = [x[0] for x in top_10]
     valores = [x[1] for x in top_10]
@@ -83,18 +102,18 @@ def criar_grafico_tribunais_exportadores(tribunais_stats):
             'text': '📤 Top 10 Tribunais Mais Exportadores',
             'x': 0.5,
             'xanchor': 'center',
-            'font': {'size': 20, 'family': 'serif', 'color': '#2c3e50'}
+            'font': {'size': 20, 'family': 'Inter', 'color': '#2c3e50'}
         },
         xaxis_title='Tribunais',
         yaxis_title='Número de Juízes Querendo Sair',
-        plot_bgcolor='rgba(253, 246, 227, 0.8)',
-        paper_bgcolor='rgba(253, 246, 227, 0.5)',
-        font=dict(family="serif", size=12, color="#2c3e50"),
+        plot_bgcolor='rgba(255, 255, 255, 0.8)',
+        paper_bgcolor='rgba(255, 255, 255, 0.5)',
+        font=dict(family="Inter", size=12, color="#2c3e50"),
         height=400,
         margin=dict(l=50, r=50, t=80, b=50)
     )
     
-    fig.update_xaxis(tickangle=45)
+    fig.update_xaxis(tickangle=-45)
     
     return fig
 
@@ -109,6 +128,15 @@ def criar_grafico_tribunais_conectados(tribunais_stats):
     
     # Pegar top 10
     top_10 = dados_conectividade[:10]
+    
+    if not top_10:
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Nenhum dado disponível",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False
+        )
+        return fig
     
     tribunais = [x[0] for x in top_10]
     conectividade_total = [x[1] for x in top_10]
@@ -140,14 +168,14 @@ def criar_grafico_tribunais_conectados(tribunais_stats):
             'text': '🔗 Top 10 Tribunais Mais Conectados',
             'x': 0.5,
             'xanchor': 'center',
-            'font': {'size': 20, 'family': 'serif', 'color': '#2c3e50'}
+            'font': {'size': 20, 'family': 'Inter', 'color': '#2c3e50'}
         },
         xaxis_title='Tribunais',
         yaxis_title='Número de Conexões',
         barmode='stack',
-        plot_bgcolor='rgba(253, 246, 227, 0.8)',
-        paper_bgcolor='rgba(253, 246, 227, 0.5)',
-        font=dict(family="serif", size=12, color="#2c3e50"),
+        plot_bgcolor='rgba(255, 255, 255, 0.8)',
+        paper_bgcolor='rgba(255, 255, 255, 0.5)',
+        font=dict(family="Inter", size=12, color="#2c3e50"),
         height=400,
         margin=dict(l=50, r=50, t=80, b=50),
         legend=dict(
@@ -159,7 +187,7 @@ def criar_grafico_tribunais_conectados(tribunais_stats):
         )
     )
     
-    fig.update_xaxis(tickangle=45)
+    fig.update_xaxis(tickangle=-45)
     
     return fig
 
@@ -167,6 +195,15 @@ def criar_grafico_estatisticas_gerais(tribunais_stats, total_juizes):
     """
     Cria gráfico de pizza com estatísticas gerais
     """
+    if not tribunais_stats:
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Nenhum dado disponível",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False
+        )
+        return fig
+    
     # Calcular dados
     total_procurados = sum(v['procurado'] for v in tribunais_stats.values())
     total_exportadores = sum(v['exportador'] for v in tribunais_stats.values())
@@ -197,11 +234,11 @@ def criar_grafico_estatisticas_gerais(tribunais_stats, total_juizes):
             'text': '📊 Distribuição dos Tribunais por Perfil',
             'x': 0.5,
             'xanchor': 'center',
-            'font': {'size': 18, 'family': 'serif', 'color': '#2c3e50'}
+            'font': {'size': 18, 'family': 'Inter', 'color': '#2c3e50'}
         },
-        plot_bgcolor='rgba(253, 246, 227, 0.8)',
-        paper_bgcolor='rgba(253, 246, 227, 0.5)',
-        font=dict(family="serif", size=12, color="#2c3e50"),
+        plot_bgcolor='rgba(255, 255, 255, 0.8)',
+        paper_bgcolor='rgba(255, 255, 255, 0.5)',
+        font=dict(family="Inter", size=12, color="#2c3e50"),
         height=400,
         margin=dict(l=50, r=50, t=80, b=50)
     )
