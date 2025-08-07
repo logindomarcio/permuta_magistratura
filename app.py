@@ -29,80 +29,244 @@ st.set_page_config(
 )
 
 # ===============================
-# Estilo personalizado - ambiente sofisticado e formal
+# Estilo moderno e sofisticado
 # ===============================
 st.markdown(
     """
     <style>
-    /* Fundo geral */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Fundo geral - branco-gelo */
     .stApp {
-        background-color: #fdf6e3;
+        background: linear-gradient(135deg, #fefefe 0%, #f8f9fa 100%);
         color: #2c3e50;
+        font-family: 'Inter', sans-serif;
     }
     
-    /* Estilo dos títulos */
+    /* Reset de todos os textos para fonte moderna */
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Títulos modernos */
     h1, h2, h3, h4, h5, h6 {
-        font-family: 'Times New Roman', serif;
-        color: #2c3e50;
+        font-family: 'Inter', sans-serif;
+        color: #1a202c;
         font-weight: 600;
+        letter-spacing: -0.025em;
     }
     
-    /* Estilo do texto geral */
-    .stMarkdown, .stText, p, div {
-        font-family: 'Times New Roman', serif;
-        color: #34495e;
+    /* Texto geral moderno */
+    .stMarkdown, .stText, p, div, span, label {
+        font-family: 'Inter', sans-serif;
+        color: #4a5568;
+        line-height: 1.6;
     }
     
-    /* Sidebar */
-    .css-1d391kg {
-        background-color: #f8f5f0;
+    /* Header moderno */
+    .main-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        margin: -1rem -1rem 3rem -1rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
     }
     
-    /* Botões */
+    .main-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .main-header p {
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.9);
+        margin-top: 1rem;
+        font-weight: 400;
+    }
+    
+    /* Botões modernos */
     .stButton > button {
-        background-color: #8b7355;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 6px;
-        font-family: 'Times New Roman', serif;
-        font-weight: 600;
-        transition: all 0.3s;
+        border-radius: 12px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
     }
     
     .stButton > button:hover {
-        background-color: #6d5a42;
-        box-shadow: 0 4px 8px rgba(139, 115, 85, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
     }
     
-    /* Métricas */
+    /* Cards de métricas modernos */
     .metric-card {
-        background: linear-gradient(135deg, #f8f5f0 0%, #ede7d9 100%);
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #8b7355;
-        box-shadow: 0 2px 4px rgba(139, 115, 85, 0.1);
+        background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        transition: all 0.3s ease;
     }
     
-    /* Containers de dados */
-    .stDataFrame {
-        background-color: #ffffff;
-        border-radius: 6px;
+    .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
     
-    /* Inputs */
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+    }
+    
+    .metric-label {
+        font-size: 0.95rem;
+        color: #718096;
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+    
+    /* Seções modernas */
+    .section-header {
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
+        border-left: 4px solid #667eea;
+        margin: 2rem 0 1rem 0;
+    }
+    
+    .section-header h2 {
+        margin: 0;
+        color: #2d3748;
+        font-size: 1.5rem;
+    }
+    
+    /* Inputs modernos */
     .stSelectbox > div > div {
-        background-color: #ffffff;
-        border-color: #8b7355;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .stSelectbox > div > div:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
     
     .stTextInput > div > div {
-        background-color: #ffffff;
-        border-color: #8b7355;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
     }
     
-    /* Avisos e alertas */
+    .stTextInput > div > div:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    /* Tabelas modernas */
+    .stDataFrame {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    
+    .stDataFrame > div {
+        border-radius: 16px;
+    }
+    
+    /* Tabs modernos */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        color: #4a5568;
+        font-weight: 500;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    /* Alertas modernos */
     .stAlert {
-        font-family: 'Times New Roman', serif;
+        font-family: 'Inter', sans-serif;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .stSuccess {
+        background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        border-left: 4px solid #38a169;
+    }
+    
+    .stInfo {
+        background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+        border-left: 4px solid #3182ce;
+    }
+    
+    .stWarning {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef5e7 100%);
+        border-left: 4px solid #d69e2e;
+    }
+    
+    /* Expander moderno */
+    .streamlit-expanderHeader {
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        font-weight: 500;
+    }
+    
+    .streamlit-expanderContent {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 4px;
+    }
+    
+    /* Animações suaves */
+    * {
+        transition: all 0.3s ease;
     }
     </style>
     """,
@@ -158,26 +322,14 @@ def carregar_dados():
         return pd.DataFrame()
 
 # ===============================
-# Interface - Cabeçalho elegante
+# Interface - Cabeçalho moderno
 # ===============================
 st.markdown(
     """
-    <div style='text-align: center; background: linear-gradient(135deg, #f8f5f0 0%, #ede7d9 100%); 
-                padding: 2rem; margin: -1rem -1rem 2rem -1rem; border-radius: 0 0 15px 15px;'>
-        <h1 style='font-family: "Times New Roman", serif; font-size: 2.5rem; 
-                   color: #2c3e50; margin-bottom: 0.5rem; font-weight: 700;'>
-            ⚖️ Permuta - Magistratura Estadual v2.0
-        </h1>
-        <h4 style='font-family: "Times New Roman", serif; color: #7f8c8d; 
-                   font-style: italic; font-weight: 400; line-height: 1.6;'>
-            Sistema Aprimorado de Análise de Permutas Judiciais<br>
-            <span style='font-size: 0.9rem;'>Versão com Quadrangulações, Pentagulações e Análises Avançadas</span>
-        </h4>
-        <hr style='border: none; height: 2px; background: linear-gradient(90deg, transparent, #8b7355, transparent); margin: 1rem 0;'>
-        <p style='font-size: 0.85rem; color: #95a5a6; font-style: italic;'>
-            A presente aplicação tem finalidade meramente ilustrativa, gratuita e não oficial.<br>
-            Desenvolvida para facilitar a visualização de oportunidades de permuta entre magistrados.
-        </p>
+    <div class="main-header">
+        <h1>⚖️ Permuta - Magistratura Estadual v2.0</h1>
+        <p>Sistema Aprimorado de Análise de Permutas Judiciais</p>
+        <p style="font-size: 0.95rem; opacity: 0.8;">Versão com Quadrangulações, Pentagulações e Análises Avançadas</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -208,97 +360,97 @@ emails_autorizados = set(df["E-mail"].dropna().unique())
 # ===============================
 # Login por e-mail
 # ===============================
-st.markdown("### 🔐 Acesso Restrito")
+st.markdown('<div class="section-header"><h2>🔐 Acesso Restrito</h2></div>', unsafe_allow_html=True)
 email_user = st.text_input("Digite seu e-mail para acessar a aplicação:", placeholder="exemplo@email.com")
 
 if email_user and email_user not in emails_autorizados:
     st.warning("⚠️ Acesso restrito. Seu e-mail não está cadastrado na base de dados.")
     st.stop()
-elif email_user and email_user in emails_autorizados:
+elif not email_user:
+    st.info("ℹ️ Digite seu e-mail para acessar a aplicação.")
+    st.stop()
+else:
     st.success(f"✅ Acesso liberado para: {email_user}")
 
 # ===============================
 # Estatísticas automáticas (sempre visíveis após login)
 # ===============================
-if email_user in emails_autorizados:
-    st.markdown("---")
-    
-    # Calcular estatísticas
-    tribunais_stats = calcular_estatisticas_tribunais(df)
-    total_juizes = len(df)
-    
-    # Métricas gerais
-    st.markdown("## 📊 Panorama Geral da Base de Dados")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <h3 style="color: #8b7355; margin: 0;">👨‍⚖️ {total_juizes}</h3>
-                <p style="margin: 0; font-size: 0.9rem;">Juízes Cadastrados</p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-    
-    with col2:
-        total_tribunais = len(tribunais_stats)
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <h3 style="color: #8b7355; margin: 0;">🏛️ {total_tribunais}</h3>
-                <p style="margin: 0; font-size: 0.9rem;">Tribunais Envolvidos</p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-    
-    with col3:
-        total_preferencias = sum(v['procurado'] for v in tribunais_stats.values())
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <h3 style="color: #8b7355; margin: 0;">🎯 {total_preferencias}</h3>
-                <p style="margin: 0; font-size: 0.9rem;">Preferências Registradas</p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-    
-    with col4:
-        casais_rapidos = len(buscar_permutas_diretas(df))
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <h3 style="color: #8b7355; margin: 0;">💫 {casais_rapidos}</h3>
-                <p style="margin: 0; font-size: 0.9rem;">Permutas Diretas Possíveis</p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-    
-    # Gráficos automáticos
-    st.markdown("## 📈 Análises Visuais Automáticas")
-    
-    tab1, tab2, tab3, tab4 = st.tabs(["🎯 Mais Procurados", "📤 Mais Exportadores", "🔗 Mais Conectados", "📊 Distribuição"])
-    
-    with tab1:
-        fig_procurados = criar_grafico_tribunais_procurados(tribunais_stats)
-        st.plotly_chart(fig_procurados, use_container_width=True)
-    
-    with tab2:
-        fig_exportadores = criar_grafico_tribunais_exportadores(tribunais_stats)
-        st.plotly_chart(fig_exportadores, use_container_width=True)
-    
-    with tab3:
-        fig_conectados = criar_grafico_tribunais_conectados(tribunais_stats)
-        st.plotly_chart(fig_conectados, use_container_width=True)
-    
-    with tab4:
-        fig_distribuicao = criar_grafico_estatisticas_gerais(tribunais_stats, total_juizes)
-        st.plotly_chart(fig_distribuicao, use_container_width=True)
+st.markdown('<div class="section-header"><h2>📊 Panorama Geral da Base de Dados</h2></div>', unsafe_allow_html=True)
+
+# Calcular estatísticas
+tribunais_stats = calcular_estatisticas_tribunais(df)
+total_juizes = len(df)
+
+# Métricas gerais
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-value">👨‍⚖️ {total_juizes}</div>
+            <div class="metric-label">Juízes Cadastrados</div>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+with col2:
+    total_tribunais = len(tribunais_stats)
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-value">🏛️ {total_tribunais}</div>
+            <div class="metric-label">Tribunais Envolvidos</div>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+with col3:
+    total_preferencias = sum(v['procurado'] for v in tribunais_stats.values())
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-value">🎯 {total_preferencias}</div>
+            <div class="metric-label">Preferências Registradas</div>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+with col4:
+    casais_rapidos = len(buscar_permutas_diretas(df))
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-value">💫 {casais_rapidos}</div>
+            <div class="metric-label">Permutas Diretas Possíveis</div>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+# Gráficos automáticos
+st.markdown('<div class="section-header"><h2>📈 Análises Visuais Automáticas</h2></div>', unsafe_allow_html=True)
+
+tab1, tab2, tab3, tab4 = st.tabs(["🎯 Mais Procurados", "📤 Mais Exportadores", "🔗 Mais Conectados", "📊 Distribuição"])
+
+with tab1:
+    fig_procurados = criar_grafico_tribunais_procurados(tribunais_stats)
+    st.plotly_chart(fig_procurados, use_container_width=True)
+
+with tab2:
+    fig_exportadores = criar_grafico_tribunais_exportadores(tribunais_stats)
+    st.plotly_chart(fig_exportadores, use_container_width=True)
+
+with tab3:
+    fig_conectados = criar_grafico_tribunais_conectados(tribunais_stats)
+    st.plotly_chart(fig_conectados, use_container_width=True)
+
+with tab4:
+    fig_distribuicao = criar_grafico_estatisticas_gerais(tribunais_stats, total_juizes)
+    st.plotly_chart(fig_distribuicao, use_container_width=True)
 
 # ===============================
 # Lista fixa de todos os TJs do Brasil
@@ -310,133 +462,108 @@ lista_tjs = sorted([
 ])
 
 # ===============================
-# Busca personalizada
+# Busca personalizada - SEMPRE VISÍVEL APÓS LOGIN
 # ===============================
-if email_user in emails_autorizados:
-    st.markdown("---")
-    st.markdown("## 🔍 Busca Personalizada de Permutas")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        origem_user = st.selectbox("📍 Sua Origem", [""] + lista_tjs, index=0)
-    with col2:
-        destino_user = st.selectbox("🎯 Seu Destino Preferencial", [""] + lista_tjs, index=0)
+st.markdown('<div class="section-header"><h2>🔍 Escolha seus critérios</h2></div>', unsafe_allow_html=True)
 
-    # Botão de busca
-    if st.button("🔍 Buscar Todas as Possibilidades de Permuta", use_container_width=True):
-        if not origem_user or not destino_user:
-            st.warning("⚠️ Por favor, selecione tanto a origem quanto o destino.")
-        else:
-            st.markdown(f"### Resultados para: {origem_user} → {destino_user}")
-            
-            # Buscar todos os tipos de permuta
-            casais = buscar_permutas_diretas(df, origem_user, destino_user)
-            triangulos = buscar_triangulacoes(df, origem_user, destino_user)
-            quadrangulos = buscar_quadrangulacoes(df, origem_user, destino_user)
-            pentagulos = buscar_pentagulacoes(df, origem_user, destino_user)
-            hexagulos = buscar_hexagulacoes(df, origem_user, destino_user)
-            
-            # Métricas dos resultados
-            col1, col2, col3, col4, col5 = st.columns(5)
-            with col1:
-                st.metric("🔁 Permutas Diretas", len(casais))
-            with col2:
-                st.metric("🔺 Triangulações", len(triangulos))
-            with col3:
-                st.metric("◊ Quadrangulações", len(quadrangulos))
-            with col4:
-                st.metric("⬟ Pentagulações", len(pentagulos))
-            with col5:
-                st.metric("⬢ Hexagulações", len(hexagulos))
-            
-            # Exibir resultados em tabs
-            if any([casais, triangulos, quadrangulos, pentagulos, hexagulos]):
-                tabs = []
-                tab_names = []
-                
-                if casais:
-                    tab_names.append(f"🔁 Casais ({len(casais)})")
-                if triangulos:
-                    tab_names.append(f"🔺 Triangulações ({len(triangulos)})")
-                if quadrangulos:
-                    tab_names.append(f"◊ Quadrangulações ({len(quadrangulos)})")
-                if pentagulos:
-                    tab_names.append(f"⬟ Pentagulações ({len(pentagulos)})")
-                if hexagulos:
-                    tab_names.append(f"⬢ Hexagulações ({len(hexagulos)})")
-                
-                tabs = st.tabs(tab_names)
-                tab_index = 0
-                
-                if casais:
-                    with tabs[tab_index]:
-                        st.dataframe(pd.DataFrame(casais), use_container_width=True)
-                        fig_casais = mostrar_mapa_casais(casais)
-                        st.plotly_chart(fig_casais, use_container_width=True)
-                    tab_index += 1
-                
-                if triangulos:
-                    with tabs[tab_index]:
-                        st.dataframe(pd.DataFrame(triangulos), use_container_width=True)
-                        fig_triangulos = mostrar_mapa_triangulacoes(triangulos)
-                        st.plotly_chart(fig_triangulos, use_container_width=True)
-                    tab_index += 1
-                
-                if quadrangulos:
-                    with tabs[tab_index]:
-                        st.dataframe(pd.DataFrame(quadrangulos), use_container_width=True)
-                        fig_quadrangulos = mostrar_mapa_ciclos_n(quadrangulos, 4)
-                        st.plotly_chart(fig_quadrangulos, use_container_width=True)
-                    tab_index += 1
-                
-                if pentagulos:
-                    with tabs[tab_index]:
-                        st.dataframe(pd.DataFrame(pentagulos), use_container_width=True)
-                        fig_pentagulos = mostrar_mapa_ciclos_n(pentagulos, 5)
-                        st.plotly_chart(fig_pentagulos, use_container_width=True)
-                    tab_index += 1
-                
-                if hexagulos:
-                    with tabs[tab_index]:
-                        st.dataframe(pd.DataFrame(hexagulos), use_container_width=True)
-                        fig_hexagulos = mostrar_mapa_ciclos_n(hexagulos, 6)
-                        st.plotly_chart(fig_hexagulos, use_container_width=True)
-            else:
-                st.info("ℹ️ Nenhuma possibilidade de permuta encontrada para os critérios selecionados.")
+col1, col2 = st.columns(2)
+with col1:
+    origem_user = st.selectbox("📍 Sua Origem", lista_tjs)
+with col2:
+    destino_user = st.selectbox("🎯 Seu Destino Preferencial", lista_tjs)
 
-# ===============================
-# Base completa (opcional)
-# ===============================
-if email_user in emails_autorizados:
-    with st.expander("📂 Ver Base de Dados Completa"):
-        st.dataframe(df, use_container_width=True)
+# Botão de busca SEMPRE visível
+if st.button("🔍 Buscar Permutas e Triangulações para meu caso", use_container_width=True):
+    if not origem_user or not destino_user:
+        st.warning("⚠️ Por favor, selecione tanto a origem quanto o destino.")
+    else:
+        st.markdown(f"### Resultados para: {origem_user} → {destino_user}")
         
-        # Opção de download
-        csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="📥 Baixar dados em CSV",
-            data=csv,
-            file_name='permuta_magistratura_dados.csv',
-            mime='text/csv'
-        )
+        # Buscar todos os tipos de permuta
+        casais = buscar_permutas_diretas(df, origem_user, destino_user)
+        triangulos = buscar_triangulacoes(df, origem_user, destino_user)
+        quadrangulos = buscar_quadrangulacoes(df, origem_user, destino_user)
+        pentagulos = buscar_pentagulacoes(df, origem_user, destino_user)
+        hexagulos = buscar_hexagulacoes(df, origem_user, destino_user)
+        
+        # Exibir resultados
+        if casais:
+            st.success(f"🎯 {len(casais)} permuta(s) direta(s) encontrada(s) para seu caso:")
+            st.dataframe(pd.DataFrame(casais), use_container_width=True)
+            st.subheader("🌐 Visualização no Mapa (Casais):")
+            fig_casais = mostrar_mapa_casais(casais)
+            st.plotly_chart(fig_casais, use_container_width=True)
+        else:
+            st.info("⚠️ Nenhuma permuta direta encontrada para sua origem e destino.")
+
+        if triangulos:
+            st.success(f"🔺 {len(triangulos)} triangulação(ões) possível(is) para seu caso:")
+            st.dataframe(pd.DataFrame(triangulos), use_container_width=True)
+            st.subheader("🌐 Visualização no Mapa (Triangulações):")
+            fig_triangulos = mostrar_mapa_triangulacoes(triangulos)
+            st.plotly_chart(fig_triangulos, use_container_width=True)
+        else:
+            st.info("⚠️ Nenhuma triangulação encontrada para sua origem e destino.")
+            
+        if quadrangulos:
+            st.success(f"◊ {len(quadrangulos)} quadrangulação(ões) possível(is) para seu caso:")
+            st.dataframe(pd.DataFrame(quadrangulos), use_container_width=True)
+            st.subheader("🌐 Visualização no Mapa (Quadrangulações):")
+            fig_quadrangulos = mostrar_mapa_ciclos_n(quadrangulos, 4)
+            st.plotly_chart(fig_quadrangulos, use_container_width=True)
+            
+        if pentagulos:
+            st.success(f"⬟ {len(pentagulos)} pentagulação(ões) possível(is) para seu caso:")
+            st.dataframe(pd.DataFrame(pentagulos), use_container_width=True)
+            st.subheader("🌐 Visualização no Mapa (Pentagulações):")
+            fig_pentagulos = mostrar_mapa_ciclos_n(pentagulos, 5)
+            st.plotly_chart(fig_pentagulos, use_container_width=True)
+            
+        if hexagulos:
+            st.success(f"⬢ {len(hexagulos)} hexagulação(ões) possível(is) para seu caso:")
+            st.dataframe(pd.DataFrame(hexagulos), use_container_width=True)
+            st.subheader("🌐 Visualização no Mapa (Hexagulações):")
+            fig_hexagulos = mostrar_mapa_ciclos_n(hexagulos, 6)
+            st.plotly_chart(fig_hexagulos, use_container_width=True)
 
 # ===============================
-# Rodapé elegante
+# Base completa (sempre ao final)
 # ===============================
-st.markdown("---")
+st.markdown('<div class="section-header"><h2>📂 Base de Dados Completa</h2></div>', unsafe_allow_html=True)
+
+with st.expander("👁️ Ver base de dados completa", expanded=False):
+    st.markdown("### 📋 Dados Completos dos Juízes Cadastrados")
+    st.dataframe(df, use_container_width=True)
+    
+    # Opção de download
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Baixar dados em CSV",
+        data=csv,
+        file_name='permuta_magistratura_dados.csv',
+        mime='text/csv',
+        use_container_width=True
+    )
+
+# ===============================
+# Rodapé moderno
+# ===============================
 st.markdown(
     """
-    <div style='text-align: center; padding: 2rem; background: linear-gradient(135deg, #f8f5f0 0%, #ede7d9 100%); 
-                margin: 2rem -1rem -1rem -1rem; border-radius: 15px 15px 0 0;'>
-        <p style='color: #7f8c8d; font-style: italic; margin-bottom: 1rem;'>
+    <div style='text-align: center; padding: 3rem 2rem; 
+                background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%); 
+                margin: 3rem -1rem -1rem -1rem; border-radius: 20px 20px 0 0;
+                border-top: 1px solid #e2e8f0;'>
+        <p style='color: #718096; font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.6;'>
             ⚠️ <strong>Aplicação desenvolvida de forma colaborativa, gratuita e sem fins econômicos.</strong><br>
             🗂️ <strong>Os dados são voluntariamente informados por seus próprios titulares.</strong><br>
             🔒 <strong>Acesso restrito aos cadastrados na base de dados.</strong>
         </p>
-        <hr style='border: none; height: 1px; background: linear-gradient(90deg, transparent, #8b7355, transparent); margin: 1rem 0;'>
-        <p style='color: #8b7355; font-weight: 600;'>
+        <div style='height: 1px; background: linear-gradient(90deg, transparent, #cbd5e0, transparent); margin: 2rem 0;'></div>
+        <p style='color: #4a5568; font-weight: 500; font-size: 1rem;'>
             💡 <strong>Necessita de mentoria em inteligência artificial?</strong><br>
-            <a href="mailto:marciocarneirodemesquitajunior@gmail.com" style='color: #8b7355; text-decoration: none;'>
+            <a href="mailto:marciocarneirodemesquitajunior@gmail.com" 
+               style='color: #667eea; text-decoration: none; font-weight: 600;'>
                 📧 Entre em contato conosco!
             </a>
         </p>
