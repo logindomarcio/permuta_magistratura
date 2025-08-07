@@ -5,8 +5,6 @@ from algoritmo import (
     buscar_permutas_diretas, 
     buscar_triangulacoes, 
     buscar_quadrangulacoes,
-    buscar_pentagulacoes,
-    buscar_hexagulacoes,
     calcular_estatisticas_tribunais
 )
 from mapa import mostrar_mapa_triangulacoes, mostrar_mapa_casais, mostrar_mapa_ciclos_n
@@ -89,13 +87,85 @@ def normalizar_texto(texto):
     texto_sem_acento = ''.join(c for c in texto_norm if not unicodedata.combining(c))
     return texto_sem_acento.strip().lower()
 
-def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
-    """Exibe os ciclos de forma didática e visual"""
+def obter_prioridade_destino(df, juiz_nome, tribunal_destino):
+    """
+    Determina se um destino é prioritário (1), secundário (2), terciário (3) ou não encontrado
+    """
+    juiz_linha = df[df['Nome'] == juiz_nome]
+    
+    if juiz_linha.empty:
+        return 0
+    
+    juiz_dados = juiz_linha.iloc[0]
+    
+    if str(juiz_dados.get('Destino 1', '')).strip() == tribunal_destino:
+        return 1
+    elif str(juiz_dados.get('Destino 2', '')).strip() == tribunal_destino:
+        return 2  
+    elif str(juiz_dados.get('Destino 3', '')).strip() == tribunal_destino:
+        return 3
+    else:
+        return 0
+
+def adicionar_sinalizadores_prioridade(resultados, df, tipo_resultado='casais'):
+    """
+    Adiciona sinalizadores de prioridade aos resultados
+    """
+    if not resultados:
+        return resultados
+        
+    resultados_com_sinalizadores = []
+    
+    for resultado in resultados:
+        resultado_novo = resultado.copy()
+        
+        if tipo_resultado == 'casais':
+            # Para casais
+            prioridade_a = obter_prioridade_destino(df, resultado['Juiz A'], resultado['Destino A'])
+            prioridade_b = obter_prioridade_destino(df, resultado['Juiz B'], resultado['Destino B'])
+            
+            # Adicionar sinalizadores
+            if prioridade_a == 2:
+                resultado_novo['Destino A'] = f"{resultado['Destino A']} ²"
+            elif prioridade_a == 3:
+                resultado_novo['Destino A'] = f"{resultado['Destino A']} ³"
+                
+            if prioridade_b == 2:
+                resultado_novo['Destino B'] = f"{resultado['Destino B']} ²"
+            elif prioridade_b == 3:
+                resultado_novo['Destino B'] = f"{resultado['Destino B']} ³"
+                
+        elif tipo_resultado == 'triangulos':
+            # Para triangulações
+            prioridade_a = obter_prioridade_destino(df, resultado['Juiz A'], resultado['A ➝'])
+            prioridade_b = obter_prioridade_destino(df, resultado['Juiz B'], resultado['B ➝'])
+            prioridade_c = obter_prioridade_destino(df, resultado['Juiz C'], resultado['C ➝'])
+            
+            if prioridade_a == 2:
+                resultado_novo['A ➝'] = f"{resultado['A ➝']} ²"
+            elif prioridade_a == 3:
+                resultado_novo['A ➝'] = f"{resultado['A ➝']} ³"
+                
+            if prioridade_b == 2:
+                resultado_novo['B ➝'] = f"{resultado['B ➝']} ²"
+            elif prioridade_b == 3:
+                resultado_novo['B ➝'] = f"{resultado['B ➝']} ³"
+                
+            if prioridade_c == 2:
+                resultado_novo['C ➝'] = f"{resultado['C ➝']} ²"
+            elif prioridade_c == 3:
+                resultado_novo['C ➝'] = f"{resultado['C ➝']} ³"
+        
+        resultados_com_sinalizadores.append(resultado_novo)
+    
+    return resultados_com_sinalizadores
+
+def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user, df):
+    """Exibe os ciclos de forma didática e visual com sinalizadores"""
     if not ciclos:
         return
         
-    titulos = {4: "◊ Quadrangulações", 5: "⬟ Pentagulações", 6: "⬢ Hexagulações"}
-    titulo = titulos.get(tipo_ciclo, f"Ciclos de {tipo_ciclo}")
+    titulo = "◊ Quadrangulações"
     
     st.success(f"{titulo}: {len(ciclos)} encontrada(s) para seu caso!")
     
@@ -105,7 +175,7 @@ def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
             
             # Extrair participantes
             participantes = []
-            letras = ['A', 'B', 'C', 'D', 'E', 'F']
+            letras = ['A', 'B', 'C', 'D']
             
             for i in range(tipo_ciclo):
                 letra = letras[i]
@@ -115,11 +185,22 @@ def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
                 destino_key = f"{letra} ➝"
                 
                 if juiz_key in ciclo and origem_key in ciclo:
+                    vai_para_original = ciclo.get(destino_key, '')
+                    prioridade = obter_prioridade_destino(df, ciclo[juiz_key], vai_para_original)
+                    
+                    # Adicionar sinalizador de prioridade
+                    vai_para_com_sinalizador = vai_para_original
+                    if prioridade == 2:
+                        vai_para_com_sinalizador = f"{vai_para_original} ²"
+                    elif prioridade == 3:
+                        vai_para_com_sinalizador = f"{vai_para_original} ³"
+                    
                     participante = {
                         'nome': ciclo[juiz_key],
                         'entrancia': ciclo.get(entrancia_key, 'Não informada'),
                         'origem': ciclo[origem_key],
-                        'vai_para': ciclo.get(destino_key, '')
+                        'vai_para': vai_para_com_sinalizador,
+                        'prioridade': prioridade
                     }
                     participantes.append(participante)
             
@@ -130,6 +211,13 @@ def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
             for i, participante in enumerate(participantes):
                 with cols[i]:
                     cor_fundo = "#e8f5e8" if participante['origem'] == origem_user else "#f8f9fa"
+                    
+                    # Cor do destino baseada na prioridade
+                    cor_destino = "#1976d2"  # Azul para prioridade 1
+                    if participante['prioridade'] == 2:
+                        cor_destino = "#ff9800"  # Laranja para prioridade 2
+                    elif participante['prioridade'] == 3:
+                        cor_destino = "#f44336"  # Vermelho para prioridade 3
                     
                     st.markdown(
                         f"""
@@ -144,7 +232,7 @@ def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
                             </div>
                             <div style='margin: 0.5rem 0; padding: 0.5rem; background: white; border-radius: 4px;'>
                                 <strong>🎯 Vai para:</strong><br>
-                                <span style='color: #1976d2; font-weight: bold;'>{participante['vai_para']}</span>
+                                <span style='color: {cor_destino}; font-weight: bold;'>{participante['vai_para']}</span>
                             </div>
                         </div>
                         """,
@@ -160,7 +248,7 @@ def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
                 proximo_idx = (i + 1) % len(participantes)
                 proximo = participantes[proximo_idx]
                 emoji_user = "🎯 " if participante['origem'] == origem_user else ""
-                st.markdown(f"• {emoji_user}**{participante['nome']}** sai do **{participante['origem']}** → vai para **{proximo['origem']}**")
+                st.markdown(f"• {emoji_user}**{participante['nome']}** sai do **{participante['origem']}** → vai para **{participante['vai_para']}**")
             
             # Resultado para o usuário
             if origem_user and destino_user:
@@ -172,8 +260,9 @@ def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
                 
                 if usuario_encontrado:
                     st.markdown("#### ✨ Resultado para Você:")
-                    if usuario_encontrado['vai_para'] == destino_user:
-                        st.success(f"🎯 **Perfeito!** Você conseguirá ir do **{origem_user}** para o **{destino_user}** nesta permuta!")
+                    destino_limpo = usuario_encontrado['vai_para'].replace(' ²', '').replace(' ³', '')
+                    if destino_limpo == destino_user:
+                        st.success(f"🎯 **Perfeito!** Você conseguirá ir do **{origem_user}** para o **{usuario_encontrado['vai_para']}** nesta permuta!")
                     else:
                         st.info(f"📍 Nesta permuta, você iria do **{origem_user}** para o **{usuario_encontrado['vai_para']}** (não exatamente seu destino preferido, mas pode ser uma oportunidade!)")
             
@@ -182,7 +271,6 @@ def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
 
 def criar_grafico_simples_tribunais_procurados(df):
     """Cria gráfico simples dos 7 tribunais mais procurados"""
-    # Contar menções como destino
     destinos_count = {}
     
     for _, linha in df.iterrows():
@@ -192,7 +280,6 @@ def criar_grafico_simples_tribunais_procurados(df):
                 destino_clean = str(destino).strip()
                 destinos_count[destino_clean] = destinos_count.get(destino_clean, 0) + 1
     
-    # Pegar top 7
     top_7 = sorted(destinos_count.items(), key=lambda x: x[1], reverse=True)[:7]
     
     if not top_7:
@@ -225,10 +312,8 @@ def criar_grafico_simples_tribunais_procurados(df):
 
 def criar_grafico_tribunais_conectados(df):
     """Cria gráfico dos 7 tribunais mais conectados (hub)"""
-    # Contar origens e destinos
     conectividade = {}
     
-    # Contar origens (saídas)
     for _, linha in df.iterrows():
         origem = linha.get("Origem")
         if origem and str(origem).strip():
@@ -237,7 +322,6 @@ def criar_grafico_tribunais_conectados(df):
                 conectividade[origem_clean] = 0
             conectividade[origem_clean] += 1
     
-    # Contar destinos (entradas)
     for _, linha in df.iterrows():
         destinos = [linha.get("Destino 1"), linha.get("Destino 2"), linha.get("Destino 3")]
         for destino in destinos:
@@ -247,7 +331,6 @@ def criar_grafico_tribunais_conectados(df):
                     conectividade[destino_clean] = 0
                 conectividade[destino_clean] += 1
     
-    # Top 7 mais conectados
     top_7 = sorted(conectividade.items(), key=lambda x: x[1], reverse=True)[:7]
     
     if not top_7:
@@ -280,7 +363,6 @@ def criar_grafico_tribunais_conectados(df):
 
 def criar_grafico_tribunais_exportadores(df):
     """Cria gráfico dos 5 tribunais mais exportadores"""
-    # Contar origens (quem quer sair)
     origens_count = {}
     
     for _, linha in df.iterrows():
@@ -289,7 +371,6 @@ def criar_grafico_tribunais_exportadores(df):
             origem_clean = str(origem).strip()
             origens_count[origem_clean] = origens_count.get(origem_clean, 0) + 1
     
-    # Top 5 mais exportadores
     top_5 = sorted(origens_count.items(), key=lambda x: x[1], reverse=True)[:5]
     
     if not top_5:
@@ -396,7 +477,7 @@ else:
     st.success(f"✅ Acesso liberado para: {email_user}")
 
 # ===============================
-# PERMUTRÔMETRO - Seção principal aprimorada
+# PERMUTRÔMETRO
 # ===============================
 st.markdown(
     """
@@ -408,7 +489,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Métricas principais
 tribunais_stats = calcular_estatisticas_tribunais(df)
 total_juizes = len(df)
 
@@ -467,7 +547,6 @@ with col4:
 # ===============================
 st.markdown("### 📊 Análise Visual Automática")
 
-# Linha 1: Procurados e Conectados
 col1, col2 = st.columns(2)
 
 with col1:
@@ -490,7 +569,6 @@ with col2:
     except Exception as e:
         st.info("🔗 Gráfico de conectados em carregamento...")
 
-# Linha 2: Exportadores (centralizado)
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
@@ -521,7 +599,7 @@ with col2:
     destino_user = st.selectbox("🎯 Seu Destino Preferencial", lista_tjs)
 
 # ===============================
-# Botão de busca e resultados
+# Botão de busca e resultados (OTIMIZADO - SÓ ATÉ QUADRANGULAÇÕES)
 # ===============================
 if st.button("✨ Buscar Permutas Diretas e Triangulações para meu caso", use_container_width=True):
     if not origem_user or not destino_user:
@@ -529,23 +607,29 @@ if st.button("✨ Buscar Permutas Diretas e Triangulações para meu caso", use_
     else:
         st.markdown(f"### Resultados para: {origem_user} → {destino_user}")
         
-        # Buscar permutas
+        # Buscar permutas (SÓ ATÉ QUADRANGULAÇÕES)
         casais = buscar_permutas_diretas(df, origem_user, destino_user)
         triangulos = buscar_triangulacoes(df, origem_user, destino_user)
+        quadrangulos = buscar_quadrangulacoes(df, origem_user, destino_user)
         
-        try:
-            quadrangulos = buscar_quadrangulacoes(df, origem_user, destino_user)
-            pentagulos = buscar_pentagulacoes(df, origem_user, destino_user)
-            hexagulos = buscar_hexagulacoes(df, origem_user, destino_user)
-        except:
-            quadrangulos = []
-            pentagulos = []
-            hexagulos = []
+        # Adicionar legenda dos sinalizadores
+        st.markdown(
+            """
+            <div style='background: #f0f9ff; padding: 1rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid #0ea5e9;'>
+                <strong>📖 Legenda dos Sinalizadores:</strong><br>
+                <span style='color: #1976d2;'>• <strong>Sem sinal</strong> = Destino Prioritário (Destino 1)</span><br>
+                <span style='color: #ff9800;'>• <strong>²</strong> = Destino Secundário (Destino 2)</span><br>
+                <span style='color: #f44336;'>• <strong>³</strong> = Destino Terciário (Destino 3)</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
         
-        # Mostrar resultados
+        # Mostrar resultados com sinalizadores
         if casais:
-            st.success(f"🎯 {len(casais)} permuta(s) direta(s) encontrada(s):")
-            st.dataframe(pd.DataFrame(casais), use_container_width=True)
+            casais_com_sinalizadores = adicionar_sinalizadores_prioridade(casais, df, 'casais')
+            st.success(f"🎯 {len(casais_com_sinalizadores)} permuta(s) direta(s) encontrada(s):")
+            st.dataframe(pd.DataFrame(casais_com_sinalizadores), use_container_width=True)
             try:
                 fig_casais = mostrar_mapa_casais(casais)
                 st.plotly_chart(fig_casais, use_container_width=True)
@@ -555,8 +639,9 @@ if st.button("✨ Buscar Permutas Diretas e Triangulações para meu caso", use_
             st.info("⚠️ Nenhuma permuta direta encontrada.")
 
         if triangulos:
-            st.success(f"🔺 {len(triangulos)} triangulação(ões) encontrada(s):")
-            st.dataframe(pd.DataFrame(triangulos), use_container_width=True)
+            triangulos_com_sinalizadores = adicionar_sinalizadores_prioridade(triangulos, df, 'triangulos')
+            st.success(f"🔺 {len(triangulos_com_sinalizadores)} triangulação(ões) encontrada(s):")
+            st.dataframe(pd.DataFrame(triangulos_com_sinalizadores), use_container_width=True)
             try:
                 fig_triangulos = mostrar_mapa_triangulacoes(triangulos)
                 st.plotly_chart(fig_triangulos, use_container_width=True)
@@ -565,17 +650,9 @@ if st.button("✨ Buscar Permutas Diretas e Triangulações para meu caso", use_
         else:
             st.info("⚠️ Nenhuma triangulação encontrada.")
             
-        # ===============================
-        # AQUI ESTÁ A ALTERAÇÃO PRINCIPAL
-        # ===============================
+        # Só quadrangulações (removemos penta e hexa para performance)
         if quadrangulos:
-            exibir_ciclos_didaticamente(quadrangulos, 4, origem_user, destino_user)
-            
-        if pentagulos:
-            exibir_ciclos_didaticamente(pentagulos, 5, origem_user, destino_user)
-            
-        if hexagulos:
-            exibir_ciclos_didaticamente(hexagulos, 6, origem_user, destino_user)
+            exibir_ciclos_didaticamente(quadrangulos, 4, origem_user, destino_user, df)
 
 # ===============================
 # Base completa
