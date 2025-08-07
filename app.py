@@ -89,6 +89,97 @@ def normalizar_texto(texto):
     texto_sem_acento = ''.join(c for c in texto_norm if not unicodedata.combining(c))
     return texto_sem_acento.strip().lower()
 
+def exibir_ciclos_didaticamente(ciclos, tipo_ciclo, origem_user, destino_user):
+    """Exibe os ciclos de forma didática e visual"""
+    if not ciclos:
+        return
+        
+    titulos = {4: "◊ Quadrangulações", 5: "⬟ Pentagulações", 6: "⬢ Hexagulações"}
+    titulo = titulos.get(tipo_ciclo, f"Ciclos de {tipo_ciclo}")
+    
+    st.success(f"{titulo}: {len(ciclos)} encontrada(s) para seu caso!")
+    
+    for idx, ciclo in enumerate(ciclos, 1):
+        with st.container():
+            st.markdown(f"### 🔄 {titulo[2:]} #{idx}")
+            
+            # Extrair participantes
+            participantes = []
+            letras = ['A', 'B', 'C', 'D', 'E', 'F']
+            
+            for i in range(tipo_ciclo):
+                letra = letras[i]
+                juiz_key = f"Juiz {letra}"
+                origem_key = f"Origem {letra}"
+                entrancia_key = f"Entrância {letra}"
+                destino_key = f"{letra} ➝"
+                
+                if juiz_key in ciclo and origem_key in ciclo:
+                    participante = {
+                        'nome': ciclo[juiz_key],
+                        'entrancia': ciclo.get(entrancia_key, 'Não informada'),
+                        'origem': ciclo[origem_key],
+                        'vai_para': ciclo.get(destino_key, '')
+                    }
+                    participantes.append(participante)
+            
+            # Fluxo visual em colunas
+            st.markdown("#### 🔀 Como funciona esta permuta:")
+            cols = st.columns(tipo_ciclo)
+            
+            for i, participante in enumerate(participantes):
+                with cols[i]:
+                    cor_fundo = "#e8f5e8" if participante['origem'] == origem_user else "#f8f9fa"
+                    
+                    st.markdown(
+                        f"""
+                        <div style='background: {cor_fundo}; padding: 1rem; border-radius: 8px; 
+                                    border: 2px solid {"#4caf50" if participante["origem"] == origem_user else "#dee2e6"}; 
+                                    text-align: center; margin-bottom: 0.5rem;'>
+                            <strong>👨‍⚖️ {participante['nome'][:20]}{"..." if len(participante['nome']) > 20 else ""}</strong><br>
+                            <span style='color: #666; font-size: 0.9em;'>{participante['entrancia']}</span><br>
+                            <div style='margin: 0.5rem 0; padding: 0.5rem; background: white; border-radius: 4px;'>
+                                <strong>📍 Está em:</strong><br>
+                                <span style='color: #d32f2f; font-weight: bold;'>{participante['origem']}</span>
+                            </div>
+                            <div style='margin: 0.5rem 0; padding: 0.5rem; background: white; border-radius: 4px;'>
+                                <strong>🎯 Vai para:</strong><br>
+                                <span style='color: #1976d2; font-weight: bold;'>{participante['vai_para']}</span>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    
+                    if i < len(participantes) - 1:
+                        st.markdown("<div style='text-align: center; font-size: 1.5rem; color: #4caf50;'>➡️</div>", unsafe_allow_html=True)
+            
+            # Resumo textual
+            st.markdown("#### 📋 Resumo da Permuta:")
+            for i, participante in enumerate(participantes):
+                proximo_idx = (i + 1) % len(participantes)
+                proximo = participantes[proximo_idx]
+                emoji_user = "🎯 " if participante['origem'] == origem_user else ""
+                st.markdown(f"• {emoji_user}**{participante['nome']}** sai do **{participante['origem']}** → vai para **{proximo['origem']}**")
+            
+            # Resultado para o usuário
+            if origem_user and destino_user:
+                usuario_encontrado = None
+                for participante in participantes:
+                    if participante['origem'] == origem_user:
+                        usuario_encontrado = participante
+                        break
+                
+                if usuario_encontrado:
+                    st.markdown("#### ✨ Resultado para Você:")
+                    if usuario_encontrado['vai_para'] == destino_user:
+                        st.success(f"🎯 **Perfeito!** Você conseguirá ir do **{origem_user}** para o **{destino_user}** nesta permuta!")
+                    else:
+                        st.info(f"📍 Nesta permuta, você iria do **{origem_user}** para o **{usuario_encontrado['vai_para']}** (não exatamente seu destino preferido, mas pode ser uma oportunidade!)")
+            
+            if idx < len(ciclos):
+                st.markdown("---")
+
 def criar_grafico_simples_tribunais_procurados(df):
     """Cria gráfico simples dos 7 tribunais mais procurados"""
     # Contar menções como destino
@@ -474,17 +565,17 @@ if st.button("✨ Buscar Permutas Diretas e Triangulações para meu caso", use_
         else:
             st.info("⚠️ Nenhuma triangulação encontrada.")
             
+        # ===============================
+        # AQUI ESTÁ A ALTERAÇÃO PRINCIPAL
+        # ===============================
         if quadrangulos:
-            st.success(f"◊ {len(quadrangulos)} quadrangulação(ões) encontrada(s):")
-            st.dataframe(pd.DataFrame(quadrangulos), use_container_width=True)
+            exibir_ciclos_didaticamente(quadrangulos, 4, origem_user, destino_user)
             
         if pentagulos:
-            st.success(f"⬟ {len(pentagulos)} pentagulação(ões) encontrada(s):")
-            st.dataframe(pd.DataFrame(pentagulos), use_container_width=True)
+            exibir_ciclos_didaticamente(pentagulos, 5, origem_user, destino_user)
             
         if hexagulos:
-            st.success(f"⬢ {len(hexagulos)} hexagulação(ões) encontrada(s):")
-            st.dataframe(pd.DataFrame(hexagulos), use_container_width=True)
+            exibir_ciclos_didaticamente(hexagulos, 6, origem_user, destino_user)
 
 # ===============================
 # Base completa
