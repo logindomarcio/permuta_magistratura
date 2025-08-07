@@ -10,12 +10,8 @@ from algoritmo import (
     calcular_estatisticas_tribunais
 )
 from mapa import mostrar_mapa_triangulacoes, mostrar_mapa_casais, mostrar_mapa_ciclos_n
-from graficos import (
-    criar_grafico_tribunais_procurados,
-    criar_grafico_tribunais_exportadores,
-    criar_grafico_tribunais_conectados,
-    criar_grafico_estatisticas_gerais
-)
+import plotly.graph_objects as go
+import plotly.express as px
 import unicodedata
 
 # ===============================
@@ -62,6 +58,22 @@ st.markdown(
         font-weight: bold;
         color: #667eea;
     }
+    
+    .permutrometro-section {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        border: 1px solid #e0e8ff;
+        margin: 2rem 0;
+    }
+    
+    .chart-container {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin: 1rem 0;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -76,6 +88,146 @@ def normalizar_texto(texto):
     texto_norm = unicodedata.normalize('NFKD', texto)
     texto_sem_acento = ''.join(c for c in texto_norm if not unicodedata.combining(c))
     return texto_sem_acento.strip().lower()
+
+def criar_grafico_simples_tribunais_procurados(df):
+    """Cria gráfico simples dos 7 tribunais mais procurados"""
+    # Contar menções como destino
+    destinos_count = {}
+    
+    for _, linha in df.iterrows():
+        destinos = [linha.get("Destino 1"), linha.get("Destino 2"), linha.get("Destino 3")]
+        for destino in destinos:
+            if destino and str(destino).strip():
+                destino_clean = str(destino).strip()
+                destinos_count[destino_clean] = destinos_count.get(destino_clean, 0) + 1
+    
+    # Pegar top 7
+    top_7 = sorted(destinos_count.items(), key=lambda x: x[1], reverse=True)[:7]
+    
+    if not top_7:
+        return None
+        
+    tribunais = [x[0] for x in top_7]
+    valores = [x[1] for x in top_7]
+    
+    fig = go.Figure(data=[
+        go.Bar(
+            x=valores,
+            y=tribunais,
+            orientation='h',
+            marker_color=px.colors.sequential.Blues_r[:len(tribunais)],
+            text=valores,
+            textposition='auto',
+        )
+    ])
+    
+    fig.update_layout(
+        title="🎯 Top 7 Tribunais Mais Procurados",
+        xaxis_title="Número de Preferências",
+        height=300,
+        margin=dict(l=80, r=50, t=50, b=50),
+        plot_bgcolor='rgba(255,255,255,0.8)',
+        paper_bgcolor='rgba(255,255,255,0)'
+    )
+    
+    return fig
+
+def criar_grafico_tribunais_conectados(df):
+    """Cria gráfico dos 7 tribunais mais conectados (hub)"""
+    # Contar origens e destinos
+    conectividade = {}
+    
+    # Contar origens (saídas)
+    for _, linha in df.iterrows():
+        origem = linha.get("Origem")
+        if origem and str(origem).strip():
+            origem_clean = str(origem).strip()
+            if origem_clean not in conectividade:
+                conectividade[origem_clean] = 0
+            conectividade[origem_clean] += 1
+    
+    # Contar destinos (entradas)
+    for _, linha in df.iterrows():
+        destinos = [linha.get("Destino 1"), linha.get("Destino 2"), linha.get("Destino 3")]
+        for destino in destinos:
+            if destino and str(destino).strip():
+                destino_clean = str(destino).strip()
+                if destino_clean not in conectividade:
+                    conectividade[destino_clean] = 0
+                conectividade[destino_clean] += 1
+    
+    # Top 7 mais conectados
+    top_7 = sorted(conectividade.items(), key=lambda x: x[1], reverse=True)[:7]
+    
+    if not top_7:
+        return None
+        
+    tribunais = [x[0] for x in top_7]
+    valores = [x[1] for x in top_7]
+    
+    fig = go.Figure(data=[
+        go.Bar(
+            x=valores,
+            y=tribunais,
+            orientation='h',
+            marker_color=px.colors.sequential.Greens_r[:len(tribunais)],
+            text=valores,
+            textposition='auto',
+        )
+    ])
+    
+    fig.update_layout(
+        title="🔗 Top 7 Tribunais Mais Conectados (Hub)",
+        xaxis_title="Total de Conexões",
+        height=300,
+        margin=dict(l=80, r=50, t=50, b=50),
+        plot_bgcolor='rgba(255,255,255,0.8)',
+        paper_bgcolor='rgba(255,255,255,0)'
+    )
+    
+    return fig
+
+def criar_grafico_tribunais_exportadores(df):
+    """Cria gráfico dos 5 tribunais mais exportadores"""
+    # Contar origens (quem quer sair)
+    origens_count = {}
+    
+    for _, linha in df.iterrows():
+        origem = linha.get("Origem")
+        if origem and str(origem).strip():
+            origem_clean = str(origem).strip()
+            origens_count[origem_clean] = origens_count.get(origem_clean, 0) + 1
+    
+    # Top 5 mais exportadores
+    top_5 = sorted(origens_count.items(), key=lambda x: x[1], reverse=True)[:5]
+    
+    if not top_5:
+        return None
+        
+    tribunais = [x[0] for x in top_5]
+    valores = [x[1] for x in top_5]
+    
+    fig = go.Figure(data=[
+        go.Bar(
+            x=valores,
+            y=tribunais,
+            orientation='h',
+            marker_color=px.colors.sequential.Reds_r[:len(tribunais)],
+            text=valores,
+            textposition='auto',
+        )
+    ])
+    
+    fig.update_layout(
+        title="📤 Top 5 Tribunais Mais Exportadores",
+        xaxis_title="Juízes Querendo Sair",
+        height=250,
+        margin=dict(l=80, r=50, t=50, b=50),
+        plot_bgcolor='rgba(255,255,255,0.8)',
+        paper_bgcolor='rgba(255,255,255,0)'
+    )
+    
+    return fig
 
 # ===============================
 # Função para carregar dados
@@ -153,10 +305,19 @@ else:
     st.success(f"✅ Acesso liberado para: {email_user}")
 
 # ===============================
-# Métricas gerais
+# PERMUTRÔMETRO - Seção principal aprimorada
 # ===============================
-st.markdown("## 📊 Panorama Geral da Base de Dados")
+st.markdown(
+    """
+    <div class="permutrometro-section">
+        <h2>🎯 Permutrômetro - Panorama Inteligente da Base de Dados</h2>
+        <p>Análise automática e visual dos dados de permuta em tempo real</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
+# Métricas principais
 tribunais_stats = calcular_estatisticas_tribunais(df)
 total_juizes = len(df)
 
@@ -199,43 +360,57 @@ with col3:
 
 with col4:
     casais_rapidos = len(buscar_permutas_diretas(df))
+    triangulos_rapidos = len(buscar_triangulacoes(df))
     st.markdown(
         f"""
         <div class="metric-card">
-            <div class="metric-value">💫 {casais_rapidos}</div>
-            <p>Permutas Diretas</p>
+            <div class="metric-value">✨ {casais_rapidos + triangulos_rapidos}</div>
+            <p>Permutas + Triangulações</p>
         </div>
         """, 
         unsafe_allow_html=True
     )
 
 # ===============================
-# Gráficos (protegidos contra erro)
+# Gráficos do Permutrômetro
 # ===============================
-st.markdown("## 📈 Análises Visuais Automáticas")
+st.markdown("### 📊 Análise Visual Automática")
 
-try:
-    tab1, tab2, tab3, tab4 = st.tabs(["🎯 Mais Procurados", "📤 Exportadores", "🔗 Conectados", "📊 Distribuição"])
+# Linha 1: Procurados e Conectados
+col1, col2 = st.columns(2)
 
-    with tab1:
-        fig_procurados = criar_grafico_tribunais_procurados(tribunais_stats)
-        st.plotly_chart(fig_procurados, use_container_width=True)
+with col1:
+    try:
+        fig_procurados = criar_grafico_simples_tribunais_procurados(df)
+        if fig_procurados:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.plotly_chart(fig_procurados, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+    except Exception as e:
+        st.info("📊 Gráfico de procurados em carregamento...")
 
-    with tab2:
-        fig_exportadores = criar_grafico_tribunais_exportadores(tribunais_stats)
-        st.plotly_chart(fig_exportadores, use_container_width=True)
+with col2:
+    try:
+        fig_conectados = criar_grafico_tribunais_conectados(df)
+        if fig_conectados:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.plotly_chart(fig_conectados, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+    except Exception as e:
+        st.info("🔗 Gráfico de conectados em carregamento...")
 
-    with tab3:
-        fig_conectados = criar_grafico_tribunais_conectados(tribunais_stats)
-        st.plotly_chart(fig_conectados, use_container_width=True)
+# Linha 2: Exportadores (centralizado)
+col1, col2, col3 = st.columns([1, 2, 1])
 
-    with tab4:
-        fig_distribuicao = criar_grafico_estatisticas_gerais(tribunais_stats, total_juizes)
-        st.plotly_chart(fig_distribuicao, use_container_width=True)
-        
-except Exception as e:
-    st.error(f"Erro ao carregar gráficos: {str(e)}")
-    st.info("Os gráficos serão corrigidos na próxima atualização.")
+with col2:
+    try:
+        fig_exportadores = criar_grafico_tribunais_exportadores(df)
+        if fig_exportadores:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.plotly_chart(fig_exportadores, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+    except Exception as e:
+        st.info("📤 Gráfico de exportadores em carregamento...")
 
 # ===============================
 # Busca personalizada
@@ -257,7 +432,7 @@ with col2:
 # ===============================
 # Botão de busca e resultados
 # ===============================
-if st.button("🔍 Buscar Permutas e Triangulações para meu caso", use_container_width=True):
+if st.button("✨ Buscar Permutas Diretas e Triangulações para meu caso", use_container_width=True):
     if not origem_user or not destino_user:
         st.warning("⚠️ Selecione origem e destino.")
     else:
