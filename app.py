@@ -5,13 +5,13 @@ import plotly.graph_objects as go
 import plotly.express as px
 import unicodedata
 
-from algoritmo import (
-    buscar_juiz_por_nome,
-    gerar_permutas_para_juiz,
-    gerar_triangulacoes_para_juiz,
-    gerar_quadrangulacoes_para_juiz,
-    gerar_estatisticas,
+from .algoritmo import (
+    buscar_permutas,
+    buscar_triangulacoes,
+    buscar_quadrangulacoes,
+    gerar_relatorio_cobertura,
 )
+
 
 from mapa import mostrar_mapa_triangulacoes, mostrar_mapa_casais
 
