@@ -6,11 +6,13 @@ import plotly.express as px
 import unicodedata
 
 from algoritmo import (
-    buscar_permutas_diretas, 
-    buscar_triangulacoes, 
-    buscar_quadrangulacoes,
-    calcular_estatisticas_tribunais
+    buscar_juiz_por_nome,
+    gerar_permutas_para_juiz,
+    gerar_triangulacoes_para_juiz,
+    gerar_quadrangulacoes_para_juiz,
+    gerar_estatisticas,
 )
+
 from mapa import mostrar_mapa_triangulacoes, mostrar_mapa_casais
 
 # ===============================
