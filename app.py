@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import unicodedata
 
-from .algoritmo import (
+from algoritmo import (
     buscar_permutas,
     buscar_triangulacoes,
     buscar_quadrangulacoes,
